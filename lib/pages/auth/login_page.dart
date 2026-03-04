@@ -302,6 +302,6 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!isValid) return;
 
-    AuthController.login(email, password);
+    authController.login(email, password);
   }
 }
