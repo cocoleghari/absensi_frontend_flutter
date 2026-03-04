@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controllers/auth_controller.dart';
+import '../controllers/user_controller.dart';
 
-class InitialBinding extends StatelessWidget {
-  const InitialBinding({super.key});
-
+class InitialBinding extends Bindings {
   @override
-  Widget build(BuildContext context) {
-    return Container();
+  void dependencies() {
+    Get.put<AuthController>(AuthController(), permanent: true);
+    Get.put<UserController>(UserController(), permanent: true);
   }
 }

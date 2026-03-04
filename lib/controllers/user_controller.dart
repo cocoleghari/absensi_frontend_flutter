@@ -1,10 +1,189 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import '../models/user_model.dart';
+import 'auth_controller.dart';
 
-class UserController extends StatelessWidget {
-  const UserController({super.key});
+class UserController extends GetxController {
+  final String baseUrl = 'http://192.168.100.10:8000/api';
 
-  @override
-  Widget build(BuildContext context) {
-    return Container();
+  var users = <UserModel>[].obs;
+  var isLoading = false.obs;
+
+  final AuthController authController = Get.find<AuthController>();
+
+  Map<String, String> get _authHeaders => {
+    'Accept': 'application/json',
+    'Authorization':
+        'Bearer ${authController.token.value}', // Pastikan token diambil dari AuthController
+  };
+
+  Future<void> fetchUsers() async {
+    try {
+      isLoading.value = true;
+
+      if (authController.token.value.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Anda harus login sebagai admin.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      final res = await http.get(
+        Uri.parse('$baseUrl/users'),
+        headers: _authHeaders,
+      );
+
+      if (res.statusCode == 200) {
+        final json = jsonDecode(res.body);
+        users.value = (json['data'] as List)
+            .map((e) => UserModel.fromJson(e))
+            .toList();
+      } else if (res.statusCode == 401 || res.statusCode == 403) {
+        Get.snackbar(
+          'Sesi habis',
+          'Silahkan login kembai.',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Terjadi kesalahan: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // register user
+  Future<void> registerUser({
+    required String name,
+    required String email,
+    required String password,
+    required String role,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      if (authController.token.value.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Anda harus login sebagai admin.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      final res = await http.post(
+        Uri.parse('$baseUrl/register'),
+        headers: _authHeaders..addAll({'Content-Type': 'application/json'}),
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'role': role,
+        }),
+      );
+
+      if (res.statusCode == 201) {
+        Get.snackbar(
+          'Sukses',
+          'User berhasil didaftarkan.',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        fetchUsers(); // Refresh daftar pengguna setelah registrasi
+      } else if (res.statusCode == 401 || res.statusCode == 403) {
+        Get.snackbar(
+          'Sesi habis',
+          'Silahkan login kembai.',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+      } else {
+        final json = jsonDecode(res.body);
+        Get.snackbar(
+          'Error',
+          json['message'] ?? 'Gagal mendaftarkan user.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Terjadi kesalahan: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Delete user
+  Future<void> deleteUser(int userId) async {
+    try {
+      isLoading.value = true;
+
+      if (authController.token.value.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Anda harus login sebagai admin.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      final res = await http.delete(
+        Uri.parse('$baseUrl/users/$userId'),
+        headers: _authHeaders,
+      );
+
+      if (res.statusCode == 200) {
+        Get.snackbar(
+          'Sukses',
+          'User berhasil dihapus.',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        fetchUsers(); // Refresh daftar pengguna setelah penghapusan
+      } else if (res.statusCode == 401 || res.statusCode == 403) {
+        Get.snackbar(
+          'Sesi habis',
+          'Silahkan login kembai.',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+      } else {
+        final json = jsonDecode(res.body);
+        Get.snackbar(
+          'Error',
+          json['message'] ?? 'Gagal menghapus user.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Terjadi kesalahan: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

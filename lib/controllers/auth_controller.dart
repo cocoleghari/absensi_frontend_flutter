@@ -39,13 +39,13 @@ class AuthController extends GetxController {
       final response = await http
           .post(
             Uri.parse('$baseUrl/register'),
-            headers: {'ContentType': 'application/json'},
-            body: {
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
               'name': name,
               'email': email,
               'password': password,
               'role': role,
-            },
+            }),
           )
           .timeout(const Duration(seconds: 30));
 
@@ -102,7 +102,7 @@ class AuthController extends GetxController {
       final response = await http
           .post(
             Uri.parse('$baseUrl/login'),
-            headers: {'ContentType': 'application/json'},
+            headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email, 'password': password}),
           )
           .timeout(const Duration(seconds: 30));
@@ -110,7 +110,7 @@ class AuthController extends GetxController {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        token.value = data['acces_token'] ?? '';
+        token.value = data['access_token'] ?? '';
         user.value = data['user'];
 
         // Simpan token dan user ke GetStorage
