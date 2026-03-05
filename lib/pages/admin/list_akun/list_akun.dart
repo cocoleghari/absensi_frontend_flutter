@@ -1,62 +1,27 @@
 import 'package:absensi_frontend_flutter/controllers/auth_controller.dart';
 import 'package:absensi_frontend_flutter/controllers/user_controller.dart';
+import 'package:absensi_frontend_flutter/pages/admin/master_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_action_buttons.dart';
+import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_empty_widget.dart';
+import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_header_widget.dart';
+import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_info_card.dart';
+import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_table_widget.dart';
 
-// class ListAkun extends GetView {
-//   const ListAkun({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text(
-//           'List Akun',
-//           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//         ),
-//         backgroundColor: Colors.blue,
-//         foregroundColor: Colors.white,
-//         elevation: 0,
-//         actions: [
-//           IconButton(
-//             icon: const Icon(Icons.logout),
-//             onPressed: () {
-//               Get.defaultDialog(
-//                 title: 'Konfirmasi Logout',
-//                 middleText: 'Apakah Anda yakin ingin logout?',
-//                 textCancel: 'Batal',
-//                 textConfirm: 'Logout',
-//                 confirmTextColor: Colors.white,
-//                 buttonColor: Colors.red,
-//                 onConfirm: () {
-//                   Get.back();
-//                   controller.logout();
-//                 },
-//               );
-//             },
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-class ListAkun extends GetView<AuthController> {
-  const ListAkun({super.key});
-
+class ListAkunPage extends GetView<AuthController> {
+  const ListAkunPage({super.key});
   @override
   Widget build(BuildContext context) {
     final UserController userController = Get.find<UserController>();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userController.fetchUsers();
     });
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'List Akun',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
@@ -67,14 +32,14 @@ class ListAkun extends GetView<AuthController> {
             onPressed: () {
               Get.defaultDialog(
                 title: 'Konfirmasi Logout',
-                middleText: 'Apakah Anda yakin ingin logout?',
+                middleText: 'Yakin ingin logout?',
                 textCancel: 'Batal',
                 textConfirm: 'Logout',
                 confirmTextColor: Colors.white,
                 buttonColor: Colors.red,
                 onConfirm: () {
                   Get.back();
-                  Get.find<AuthController>().logout();
+                  controller.logout();
                 },
               );
             },
@@ -90,13 +55,11 @@ class ListAkun extends GetView<AuthController> {
               children: [
                 CircularProgressIndicator(),
                 SizedBox(height: 16),
-                Text('Memuat data pengguna...'),
+                Text('Memuat data...'),
               ],
             ),
           );
         }
-
-        // hitung jumlah admin dan user
         final int totalUsers = userController.users.length;
         final int totalAdmins = userController.users
             .where((u) => u.role == 'admin')
@@ -104,13 +67,12 @@ class ListAkun extends GetView<AuthController> {
         final int totalRegularUsers = userController.users
             .where((u) => u.role == 'user')
             .length;
-
         return Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.blue.withOpacity(0.1), Colors.white],
+              colors: [Colors.blue.shade50, Colors.white],
             ),
           ),
           child: SafeArea(
@@ -122,35 +84,29 @@ class ListAkun extends GetView<AuthController> {
                   totalAdmins: totalAdmins,
                   totalRegularUsers: totalRegularUsers,
                 ),
-
-                // Tabel data user
                 Expanded(
                   child: Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
+                          color: Colors.blue.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
                     child: AkunTableWidget(userController: userController),
                   ),
                 ),
-
-                // Tombol  dan info card
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       AkunActionButtons(userController: userController),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       const AkunInfoCard(),
                     ],
                   ),
