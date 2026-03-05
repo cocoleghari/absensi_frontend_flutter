@@ -129,7 +129,7 @@ class AuthController extends GetxController {
         if (isAdmin) {
           Get.offAllNamed('/admin');
         } else {
-          Get.offAllNamed('/user');
+          Get.offAllNamed('/users');
         }
       } else {
         String errorMessage = data['message'] ?? 'Login gagal';

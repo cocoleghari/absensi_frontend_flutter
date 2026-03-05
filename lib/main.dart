@@ -1,3 +1,6 @@
+import 'package:absensi_frontend_flutter/bindings/lokasi_binding.dart';
+import 'package:absensi_frontend_flutter/pages/admin/lokasi_page/lokasi_page.dart';
+import 'package:absensi_frontend_flutter/pages/user/user_page/user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -27,7 +30,18 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/login', page: () => const LoginPage()),
         GetPage(name: '/register', page: () => const RegisterPage()),
+        // ini routing untuk admin
         GetPage(name: '/admin', page: () => const ListAkunPage()),
+        GetPage(
+          name: '/admin/lokasi',
+          page: () => const LokasiPage(),
+          binding: LokasiBinding(),
+        ),
+        GetPage(
+          name: '/users',
+          page: () => const UserPage(),
+          binding: LokasiBinding(),
+        ),
       ],
     );
   }

@@ -8,7 +8,7 @@ import 'auth_controller.dart';
 class LokasiController extends GetxController {
   final auth = Get.find<AuthController>();
   // final String baseUrl = 'http://192.168.95.243:8000/api';
-  final String baseUrl = 'http://192.168.137.1:8000/api';
+  final String baseUrl = 'http://10.0.2.2:8000/api';
   var lokasis = <LokasiModel>[].obs;
   var users = <Map<String, dynamic>>[].obs;
   var pusatLokasis = <Map<String, dynamic>>[].obs;

@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:absensi_frontend_flutter/controllers/lokasi_controller.dart';
+import 'package:get/get.dart';
 
-class LokasiBinding extends StatelessWidget {
-  const LokasiBinding({super.key});
-
+class LokasiBinding extends Bindings {
   @override
-  Widget build(BuildContext context) {
-    return Container();
+  void dependencies() {
+    Get.lazyPut<LokasiController>(() => LokasiController(), fenix: true);
   }
 }

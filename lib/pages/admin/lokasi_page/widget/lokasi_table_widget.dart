@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/lokasi_controller.dart';
-import 'lokasi_delete_dialog.dart';
-import 'lokasi_empty_widget.dart';
+// import 'lokasi_delete_dialog.dart';
+// import 'lokasi_empty_widget.dart';
 
 class LokasiTableWidget extends GetView<LokasiController> {
   const LokasiTableWidget({super.key});
@@ -12,7 +12,7 @@ class LokasiTableWidget extends GetView<LokasiController> {
       return const Center(child: CircularProgressIndicator());
     }
     if (controller.lokasis.isEmpty) {
-      return const LokasiEmptyWidget();
+      // return const LokasiEmptyWidget();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,17 +101,17 @@ class LokasiTableWidget extends GetView<LokasiController> {
                   ),
                 ),
               ),
-              DataCell(
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => LokasiDeleteDialog.show(
-                    context: Get.context!,
-                    id: item.id,
-                    lokasi: item.lokasi,
-                    controller: controller,
-                  ),
-                ),
-              ),
+              // DataCell(
+              //   IconButton(
+              //     icon: const Icon(Icons.delete, color: Colors.red),
+              //     onPressed: () => LokasiDeleteDialog.show(
+              //       context: Get.context!,
+              //       id: item.id,
+              //       lokasi: item.lokasi,
+              //       controller: controller,
+              //     ),
+              //   ),
+              // ),
             ],
           );
         }),
@@ -141,15 +141,15 @@ class LokasiTableWidget extends GetView<LokasiController> {
                 Text('Koordinat: ${item.koordinat}'),
               ],
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => LokasiDeleteDialog.show(
-                context: Get.context!,
-                id: item.id,
-                lokasi: item.lokasi,
-                controller: controller,
-              ),
-            ),
+            // trailing: IconButton(
+            //   icon: const Icon(Icons.delete, color: Colors.red),
+            //   onPressed: () => LokasiDeleteDialog.show(
+            //     context: Get.context!,
+            //     id: item.id,
+            //     lokasi: item.lokasi,
+            //     controller: controller,
+            //   ),
+            // ),
           ),
         );
       },

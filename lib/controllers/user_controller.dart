@@ -7,7 +7,7 @@ import '../models/user_model.dart';
 import 'auth_controller.dart';
 
 class UserController extends GetxController {
-  final String baseUrl = 'http://192.168.100.10:8000/api';
+  final String baseUrl = 'http://10.0.2.2:8000/api';
 
   var users = <UserModel>[].obs;
   var isLoading = false.obs;
@@ -35,7 +35,7 @@ class UserController extends GetxController {
       }
 
       final res = await http.get(
-        Uri.parse('$baseUrl/users'),
+        Uri.parse('$baseUrl/admin/users'),
         headers: _authHeaders,
       );
 
@@ -147,7 +147,7 @@ class UserController extends GetxController {
       }
 
       final res = await http.delete(
-        Uri.parse('$baseUrl/users/$userId'),
+        Uri.parse('$baseUrl/admin/users/$userId'),
         headers: _authHeaders,
       );
 
@@ -159,13 +159,6 @@ class UserController extends GetxController {
           colorText: Colors.white,
         );
         fetchUsers(); // Refresh daftar pengguna setelah penghapusan
-      } else if (res.statusCode == 401 || res.statusCode == 403) {
-        Get.snackbar(
-          'Sesi habis',
-          'Silahkan login kembai.',
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-        );
       } else {
         final json = jsonDecode(res.body);
         Get.snackbar(

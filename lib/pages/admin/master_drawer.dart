@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
-import 'riwayatSemuaUserPage/riwayat_semua_user_page.dart';
+// import 'riwayatSemuaUserPage/riwayat_semua_user_page.dart';
 
 class MasterDrawer extends StatelessWidget {
   final String currentPage;
@@ -221,7 +221,7 @@ class MasterDrawer extends StatelessWidget {
         onTap: () {
           Get.back();
           if (!isSelected) {
-            Get.to(() => const RiwayatSemuaUserPage());
+            // Get.to(() => const RiwayatSemuaUserPage());
           }
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

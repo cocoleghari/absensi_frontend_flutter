@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../controllers/lokasi_controller.dart';
-import 'pilih_lokasi_dialog.dart';
+// import 'pilih_lokasi_dialog.dart';
 
 class LokasiEntryItem extends GetView<LokasiController> {
   final int index;
@@ -124,38 +124,38 @@ class LokasiEntryItem extends GetView<LokasiController> {
         isDense: true,
         prefixIcon: const Icon(Icons.location_on, size: 20),
         hintText: 'Klik tombol Pilih Lokasi',
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.map, color: Colors.blue),
-          onPressed: () => _showPilihLokasiDialog(koordinat, lokasi: lokasi),
-          tooltip: 'Pilih Lokasi di Maps',
-        ),
+        // suffixIcon: IconButton(
+        //   icon: const Icon(Icons.map, color: Colors.blue),
+        //   onPressed: () => _showPilihLokasiDialog(koordinat, lokasi: lokasi),
+        //   tooltip: 'Pilih Lokasi di Maps',
+        // ),
       ),
     );
   }
 
-  Future<void> _showPilihLokasiDialog(
-    RxString koordinat, {
-    RxString? lokasi,
-  }) async {
-    final result = await Get.dialog<Map<String, dynamic>>(
-      PilihLokasiDialog(
-        initialLocation: _parseKoordinat(koordinat.value),
-        initialAddress: lokasi?.value,
-      ),
-    );
-    if (result != null) {
-      final koordinatString = result['koordinat'] as String;
-      final alamat = result['alamat'] as String?;
-      koordinat.value = koordinatString;
-      controller.updateLokasiEntry(index, 'koordinat', koordinatString);
-      if (alamat != null &&
-          alamat.isNotEmpty &&
-          (lokasi?.value.isEmpty ?? true)) {
-        lokasi?.value = alamat;
-        controller.updateLokasiEntry(index, 'lokasi', alamat);
-      }
-    }
-  }
+  // Future<void> _showPilihLokasiDialog(
+  //   RxString koordinat, {
+  //   RxString? lokasi,
+  // }) async {
+  //   final result = await Get.dialog<Map<String, dynamic>>(
+  //     PilihLokasiDialog(
+  //       initialLocation: _parseKoordinat(koordinat.value),
+  //       initialAddress: lokasi?.value,
+  //     ),
+  //   );
+  //   if (result != null) {
+  //     final koordinatString = result['koordinat'] as String;
+  //     final alamat = result['alamat'] as String?;
+  //     koordinat.value = koordinatString;
+  //     controller.updateLokasiEntry(index, 'koordinat', koordinatString);
+  //     if (alamat != null &&
+  //         alamat.isNotEmpty &&
+  //         (lokasi?.value.isEmpty ?? true)) {
+  //       lokasi?.value = alamat;
+  //       controller.updateLokasiEntry(index, 'lokasi', alamat);
+  //     }
+  //   }
+  // }
 
   Widget _buildMapPreview(
     LatLng mapLocation,
@@ -215,33 +215,33 @@ class LokasiEntryItem extends GetView<LokasiController> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: () =>
-                            _showPilihLokasiDialog(koordinat, lokasi: lokasi),
-                        borderRadius: BorderRadius.circular(20),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.edit_location,
-                                size: 16,
-                                color: Colors.blue,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                'Ubah',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // onTap: () =>
+                        //     _showPilihLokasiDialog(koordinat, lokasi: lokasi),
+                        // borderRadius: BorderRadius.circular(20),
+                        // child: const Padding(
+                        //   padding: EdgeInsets.symmetric(
+                        //     horizontal: 12,
+                        //     vertical: 6,
+                        //   ),
+                        //   child: Row(
+                        //     mainAxisSize: MainAxisSize.min,
+                        //     children: [
+                        //       Icon(
+                        //         Icons.edit_location,
+                        //         size: 16,
+                        //         color: Colors.blue,
+                        //       ),
+                        //       SizedBox(width: 4),
+                        //       Text(
+                        //         'Ubah',
+                        //         style: TextStyle(
+                        //           fontSize: 12,
+                        //           color: Colors.blue,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ),
                     ),
                   ),

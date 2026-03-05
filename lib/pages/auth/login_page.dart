@@ -96,10 +96,13 @@ class _LoginPageState extends State<LoginPage> {
                         decoration: InputDecoration(
                           labelText: 'Email',
                           hintText: 'contoh@email.com',
-                          border: const OutlineInputBorder(
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
-                          prefix: const Icon(Icons.email, color: Colors.blue),
+                          prefixIcon: const Icon(
+                            Icons.email,
+                            color: Colors.blue,
+                          ),
                           errorText: emailError.value.isEmpty
                               ? null
                               : emailError.value,
