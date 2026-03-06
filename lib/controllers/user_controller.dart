@@ -159,6 +159,13 @@ class UserController extends GetxController {
           colorText: Colors.white,
         );
         fetchUsers(); // Refresh daftar pengguna setelah penghapusan
+      } else if (res.statusCode == 401 || res.statusCode == 403) {
+        Get.snackbar(
+          'Sesi habis',
+          'Silahkan login kembai.',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
       } else {
         final json = jsonDecode(res.body);
         Get.snackbar(
