@@ -1,5 +1,7 @@
 import 'package:absensi_frontend_flutter/bindings/lokasi_binding.dart';
+import 'package:absensi_frontend_flutter/bindings/pusat_lokasi_binding.dart';
 import 'package:absensi_frontend_flutter/pages/admin/lokasi_page/lokasi_page.dart';
+import 'package:absensi_frontend_flutter/pages/admin/pusat_lokasi/pusat_lokasi_page.dart';
 import 'package:absensi_frontend_flutter/pages/user/user_page/user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,6 +43,11 @@ class MyApp extends StatelessWidget {
           name: '/users',
           page: () => const UserPage(),
           binding: LokasiBinding(),
+        ),
+        GetPage(
+          name: '/admin/pusat-lokasi',
+          page: () => const ListPusatLokasi(),
+          binding: PusatLokasiBinding(),
         ),
       ],
     );
