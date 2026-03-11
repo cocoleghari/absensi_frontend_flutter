@@ -16,12 +16,12 @@ class ListPusatLokasi extends GetView<PusatLokasiController> {
     final PusatLokasiController Controller = Get.find<PusatLokasiController>();
     final AuthController Controller2 = Get.find<AuthController>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Controller.fetchUsers();
+      Controller.fetchPusatLokasi();
     });
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'List Lokasi',
+          'List Pusat Lokasi',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.blue,

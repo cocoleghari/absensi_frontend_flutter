@@ -11,7 +11,7 @@ class PusatLokasiTableWidget extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    if (pusatlokasiController.users.isEmpty) {
+    if (pusatlokasiController.pusatLokasis.isEmpty) {
       return const PusatLokasiEmptyWidget();
     }
     return ClipRRect(
@@ -35,8 +35,10 @@ class PusatLokasiTableWidget extends StatelessWidget {
               DataColumn(label: Text('Keterangan')),
               DataColumn(label: Text('Aksi')),
             ],
-            rows: List.generate(pusatlokasiController.users.length, (index) {
-              final user = pusatlokasiController.users[index];
+            rows: List.generate(pusatlokasiController.pusatLokasis.length, (
+              index,
+            ) {
+              final pusat_lokasi = pusatlokasiController.pusatLokasis[index];
               return DataRow(
                 cells: [
                   DataCell(
@@ -61,11 +63,11 @@ class PusatLokasiTableWidget extends StatelessWidget {
                   ),
                   DataCell(
                     Text(
-                      user.nama_lokasi,
+                      pusat_lokasi.nama_lokasi,
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                   ),
-                  DataCell(Text(user.titik_koordinat)),
+                  DataCell(Text(pusat_lokasi.titik_koordinat)),
                   // DataCell(_buildRoleBadge(user.role)),
                   // DataCell(
                   //   IconButton(

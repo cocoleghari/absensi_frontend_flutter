@@ -22,7 +22,7 @@ class DeletePusatLokasiConfirmation {
           ElevatedButton(
             onPressed: () async {
               Get.back();
-              await pusatlokasiController.deleteLokasi(userId);
+              await pusatlokasiController.deletePusatLokasi(userId);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

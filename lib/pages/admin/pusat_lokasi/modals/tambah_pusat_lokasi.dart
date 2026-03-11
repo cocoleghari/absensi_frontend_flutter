@@ -155,7 +155,7 @@ class TambahLokasiModal {
 
   static Widget _buildRegisterButton(
     TextEditingController nama_lokasiC,
-    TextEditingController alamat_lokasiC,
+    TextEditingController titik_koordinatC,
     TextEditingController keterangan_lokasiC,
     PusatLokasiController pusatController,
   ) {
@@ -164,7 +164,7 @@ class TambahLokasiModal {
       child: ElevatedButton(
         onPressed: () => _validateAndRegister(
           nama_lokasiC,
-          alamat_lokasiC,
+          titik_koordinatC,
           keterangan_lokasiC,
           pusatController,
         ),
@@ -200,7 +200,7 @@ class TambahLokasiModal {
 
   static void _validateAndRegister(
     TextEditingController nama_lokasiC,
-    TextEditingController alamat_lokasiC,
+    TextEditingController titik_koordinatC,
     TextEditingController keterangan_lokasiC,
     PusatLokasiController pusatController,
   ) {
@@ -215,7 +215,7 @@ class TambahLokasiModal {
       );
       return;
     }
-    if (alamat_lokasiC.text.isEmpty) {
+    if (titik_koordinatC.text.isEmpty) {
       Get.snackbar(
         'Error',
         'Email wajib diisi',
@@ -252,11 +252,10 @@ class TambahLokasiModal {
           ElevatedButton(
             onPressed: () {
               Get.back();
-              pusatController.tambahLokasi(
-                nama_lokasi: nama_lokasiC.text,
-                alamat_lokasi: alamat_lokasiC.text,
-                keterangan_lokasi: keterangan_lokasiC.text,
-                role: 'user',
+              pusatController.createPusatLokasi(
+                namaLokasi: nama_lokasiC.text,
+                titikKordinat: titik_koordinatC.text,
+                keterangan: keterangan_lokasiC.text,
               );
             },
             style: ElevatedButton.styleFrom(

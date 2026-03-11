@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -7,183 +6,404 @@ import '../models/pusat_lokasi_model.dart';
 import 'auth_controller.dart';
 
 class PusatLokasiController extends GetxController {
+  final auth = Get.find<AuthController>();
   final String baseUrl = 'http://10.0.2.2:8000/api';
 
-  var users = <PusatLokasiModel>[].obs;
+  var pusatLokasis = <PusatLokasiModel>[].obs;
+  var filteredLokasis = <PusatLokasiModel>[].obs;
   var isLoading = false.obs;
+  var isSubmitting = false.obs;
+  var errorMessage = ''.obs;
+  var searchQuery = ''.obs;
 
-  final AuthController authController = Get.find<AuthController>();
+  var currentPage = 1.obs;
+  var lastPage = 1.obs;
+  var totalItems = 0.obs;
 
-  Map<String, String> get _authHeaders => {
-    'Accept': 'application/json',
-    'Authorization':
-        'Bearer ${authController.token.value}', // Pastikan token diambil dari AuthController
-  };
+  var selectedIds = <int>[].obs;
+  var isSelectionMode = false.obs;
 
-  Future<void> fetchUsers() async {
+  @override
+  void onInit() {
+    super.onInit();
+    fetchPusatLokasi();
+  }
+
+  Map<String, String> get _authHeaders {
+    return {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${auth.token}',
+    };
+  }
+
+  Future<void> fetchPusatLokasi({int page = 1, String? search}) async {
+    if (auth.token.isEmpty) {
+      errorMessage.value = 'Token tidak ditemukan';
+      return;
+    }
+
+    isLoading.value = true;
+    errorMessage.value = '';
+
     try {
-      isLoading.value = true;
+      String url = '$baseUrl/admin/pusat-lokasi';
+      bool hasParam = false;
 
-      if (authController.token.value.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Anda harus login sebagai admin.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-        return;
+      if (search != null && search.isNotEmpty) {
+        url += '?search=$search';
+        hasParam = true;
       }
 
-      final res = await http.get(
-        Uri.parse('$baseUrl/admin/users'),
-        headers: _authHeaders,
-      );
+      if (page > 1) {
+        url += hasParam ? '&page=$page' : '?page=$page';
+      }
 
-      if (res.statusCode == 200) {
-        final json = jsonDecode(res.body);
-        users.value = (json['data'] as List)
-            .map((e) => PusatLokasiModel.fromJson(e))
-            .toList();
-      } else if (res.statusCode == 401 || res.statusCode == 403) {
-        Get.snackbar(
-          'Sesi habis',
-          'Silahkan login kembai.',
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-        );
+      print('Fetching pusat lokasi: $url');
+
+      final response = await http
+          .get(Uri.parse(url), headers: _authHeaders)
+          .timeout(const Duration(seconds: 10));
+
+      print('Response status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        if (jsonData['data'] is List) {
+          List<PusatLokasiModel> data = (jsonData['data'] as List)
+              .map((item) => PusatLokasiModel.fromJson(item))
+              .toList();
+
+          pusatLokasis.value = data;
+          filteredLokasis.value = data;
+
+          print('Data loaded: ${data.length} items');
+        } else if (jsonData['data'] is Map &&
+            jsonData['data']['data'] != null) {
+          List<PusatLokasiModel> data = (jsonData['data']['data'] as List)
+              .map((item) => PusatLokasiModel.fromJson(item))
+              .toList();
+
+          pusatLokasis.value = data;
+          filteredLokasis.value = data;
+
+          currentPage.value = jsonData['data']['current_page'] ?? 1;
+          lastPage.value = jsonData['data']['last_page'] ?? 1;
+          totalItems.value = jsonData['data']['total'] ?? 0;
+
+          print('Data loaded: page $currentPage/$lastPage, total: $totalItems');
+        } else {
+          pusatLokasis.value = [];
+          filteredLokasis.value = [];
+        }
+      } else if (response.statusCode == 401) {
+        errorMessage.value = 'Sesi habis, silahkan login ulang';
+        Future.delayed(const Duration(seconds: 2), () => auth.logout());
+      } else {
+        errorMessage.value = 'Error ${response.statusCode}';
+        print('Error response: ${response.body}');
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Terjadi kesalahan: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      print('Error fetch pusat lokasi: $e');
+      errorMessage.value = 'Gagal memuat data: ${e.toString()}';
     } finally {
       isLoading.value = false;
     }
   }
 
-  // register user
-  Future<void> tambahLokasi({
-    required String nama_lokasi,
-    required String alamat_lokasi,
-    required String keterangan_lokasi,
-    required String role,
+  void search(String query) {
+    searchQuery.value = query;
+    if (query.isEmpty) {
+      filteredLokasis.value = pusatLokasis;
+    } else {
+      filteredLokasis.value = pusatLokasis.where((item) {
+        return item.nama_lokasi.toLowerCase().contains(query.toLowerCase()) ||
+            (item.keterangan_lokasi?.toLowerCase().contains(
+                  query.toLowerCase(),
+                ) ??
+                false);
+      }).toList();
+    }
+  }
+
+  Future<bool> createPusatLokasi({
+    required String namaLokasi,
+    required String titikKordinat,
+    String? keterangan,
   }) async {
-    try {
-      isLoading.value = true;
-
-      if (authController.token.value.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Anda harus login sebagai admin.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      final res = await http.post(
-        Uri.parse('$baseUrl/register'),
-        headers: _authHeaders..addAll({'Content-Type': 'application/json'}),
-        body: jsonEncode({
-          'nama_lokasi': nama_lokasi,
-          'alamat_lokasi': alamat_lokasi,
-          'keterangan_lokasi': keterangan_lokasi,
-          'role': role,
-        }),
-      );
-
-      if (res.statusCode == 201) {
-        Get.snackbar(
-          'Sukses',
-          'User berhasil didaftarkan.',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-        fetchUsers(); // Refresh daftar pengguna setelah registrasi
-      } else if (res.statusCode == 401 || res.statusCode == 403) {
-        Get.snackbar(
-          'Sesi habis',
-          'Silahkan login kembai.',
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-        );
-      } else {
-        final json = jsonDecode(res.body);
-        Get.snackbar(
-          'Error',
-          json['message'] ?? 'Gagal mendaftarkan user.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
-    } catch (e) {
+    if (auth.token.isEmpty) {
       Get.snackbar(
         'Error',
-        'Terjadi kesalahan: $e',
+        'Token tidak ditemukan',
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
       );
+      return false;
+    }
+
+    isSubmitting.value = true;
+
+    try {
+      print('Creating pusat lokasi: $namaLokasi');
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/admin/pusat_lokasi/all'),
+            headers: {..._authHeaders, 'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'nama_lokasi': namaLokasi,
+              'titik_kordinat': titikKordinat,
+              'keterangan': keterangan,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        // Refresh data
+        await fetchPusatLokasi();
+
+        Get.snackbar(
+          'Berhasil',
+          'Data pusat lokasi berhasil ditambahkan',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 2),
+        );
+        return true;
+      } else {
+        final errorData = jsonDecode(response.body);
+        String errorMsg = errorData['message'] ?? 'Gagal menambahkan data';
+
+        // Tampilkan error validasi jika ada
+        if (errorData['errors'] != null) {
+          final errors = errorData['errors'] as Map;
+          final firstError = errors.values.first;
+          if (firstError is List && firstError.isNotEmpty) {
+            errorMsg = firstError.first;
+          }
+        }
+
+        Get.snackbar(
+          'Gagal',
+          errorMsg,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
+        return false;
+      }
+    } catch (e) {
+      print('Error create: $e');
+      Get.snackbar(
+        'Error',
+        'Koneksi error: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+      return false;
     } finally {
-      isLoading.value = false;
+      isSubmitting.value = false;
     }
   }
 
-  // Delete user
-  Future<void> deleteLokasi(int userId) async {
+  Future<bool> updatePusatLokasi({
+    required int id,
+    String? namaLokasi,
+    String? titikKordinat,
+    String? keterangan,
+  }) async {
+    if (auth.token.isEmpty) {
+      Get.snackbar('Error', 'Token tidak ditemukan');
+      return false;
+    }
+
+    isSubmitting.value = true;
+
     try {
-      isLoading.value = true;
+      print('Updating pusat lokasi ID: $id');
 
-      if (authController.token.value.isEmpty) {
+      Map<String, dynamic> body = {};
+      if (namaLokasi != null) body['nama_lokasi'] = namaLokasi;
+      if (titikKordinat != null) body['titik_kordinat'] = titikKordinat;
+      if (keterangan != null) body['keterangan'] = keterangan;
+
+      final response = await http
+          .put(
+            Uri.parse('$baseUrl/admin/pusat-lokasi/$id'),
+            headers: {..._authHeaders, 'Content-Type': 'application/json'},
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        await fetchPusatLokasi();
+
         Get.snackbar(
-          'Error',
-          'Anda harus login sebagai admin.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      final res = await http.delete(
-        Uri.parse('$baseUrl/admin/users/$userId'),
-        headers: _authHeaders,
-      );
-
-      if (res.statusCode == 200) {
-        Get.snackbar(
-          'Sukses',
-          'User berhasil dihapus.',
+          '✅ Berhasil',
+          'Data pusat lokasi berhasil diupdate',
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );
-        fetchUsers(); // Refresh daftar pengguna setelah penghapusan
-      } else if (res.statusCode == 401 || res.statusCode == 403) {
-        Get.snackbar(
-          'Sesi habis',
-          'Silahkan login kembai.',
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-        );
+        return true;
       } else {
-        final json = jsonDecode(res.body);
+        final errorData = jsonDecode(response.body);
         Get.snackbar(
-          'Error',
-          json['message'] ?? 'Gagal menghapus user.',
+          'Gagal',
+          errorData['message'] ?? 'Gagal mengupdate data',
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
+        return false;
       }
     } catch (e) {
+      print('Error update: $e');
+      Get.snackbar('Error', e.toString());
+      return false;
+    } finally {
+      isSubmitting.value = false;
+    }
+  }
+
+  Future<bool> deletePusatLokasi(int id) async {
+    if (auth.token.isEmpty) {
+      Get.snackbar('Error', 'Token tidak ditemukan');
+      return false;
+    }
+
+    try {
+      print('Deleting pusat lokasi ID: $id');
+
+      final response = await http
+          .delete(
+            Uri.parse('$baseUrl/admin/pusat-lokasi/$id'),
+            headers: _authHeaders,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        pusatLokasis.removeWhere((item) => item.id == id);
+        filteredLokasis.removeWhere((item) => item.id == id);
+
+        Get.snackbar(
+          'Berhasil',
+          'Data pusat lokasi berhasil dihapus',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        return true;
+      } else {
+        final errorData = jsonDecode(response.body);
+        Get.snackbar(
+          'Gagal',
+          errorData['message'] ?? 'Gagal menghapus data',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+    } catch (e) {
+      print('Error delete: $e');
+      Get.snackbar('Error', e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> deleteMultiplePusatLokasi() async {
+    if (selectedIds.isEmpty) {
       Get.snackbar(
-        'Error',
-        'Terjadi kesalahan: $e',
-        backgroundColor: Colors.red,
+        'Info',
+        'Pilih data yang akan dihapus',
+        backgroundColor: Colors.orange,
         colorText: Colors.white,
       );
-    } finally {
-      isLoading.value = false;
+      return false;
     }
+
+    if (auth.token.isEmpty) {
+      Get.snackbar('Error', 'Token tidak ditemukan');
+      return false;
+    }
+
+    try {
+      print('Deleting multiple: ${selectedIds.length} items');
+
+      final response = await http
+          .delete(
+            Uri.parse('$baseUrl/admin/pusat-lokasi'),
+            headers: {..._authHeaders, 'Content-Type': 'application/json'},
+            body: jsonEncode({'ids': selectedIds.toList()}),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+
+        await fetchPusatLokasi();
+
+        selectedIds.clear();
+        isSelectionMode.value = false;
+
+        Get.snackbar(
+          'Berhasil',
+          result['message'] ?? 'Data berhasil dihapus',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        return true;
+      } else {
+        final errorData = jsonDecode(response.body);
+        Get.snackbar(
+          'Gagal',
+          errorData['message'] ?? 'Gagal menghapus data',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+    } catch (e) {
+      print('Error delete multiple: $e');
+      Get.snackbar('Error', e.toString());
+      return false;
+    }
+  }
+
+  void toggleSelectionMode() {
+    isSelectionMode.value = !isSelectionMode.value;
+    if (!isSelectionMode.value) {
+      selectedIds.clear();
+    }
+  }
+
+  void toggleSelectItem(int id) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+    } else {
+      selectedIds.add(id);
+    }
+  }
+
+  void selectAll() {
+    if (selectedIds.length == filteredLokasis.length) {
+      selectedIds.clear();
+    } else {
+      selectedIds.value = filteredLokasis.map((e) => e.id).toList();
+    }
+  }
+
+  void reset() {
+    pusatLokasis.clear();
+    filteredLokasis.clear();
+    errorMessage.value = '';
+    isLoading.value = false;
+    isSubmitting.value = false;
+    selectedIds.clear();
+    isSelectionMode.value = false;
+    searchQuery.value = '';
   }
 }

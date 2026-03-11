@@ -14,7 +14,7 @@ class PusatLokasiActionButton extends StatelessWidget {
       children: [
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: pusatLokasiController.fetchUsers,
+            onPressed: pusatLokasiController.fetchPusatLokasi,
             icon: const Icon(Icons.refresh),
             label: const Text('Refresh'),
             style: OutlinedButton.styleFrom(
