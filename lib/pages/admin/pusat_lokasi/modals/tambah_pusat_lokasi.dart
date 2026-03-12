@@ -1,3 +1,4 @@
+import 'package:absensi_frontend_flutter/pages/admin/pusat_lokasi/modals/map_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:absensi_frontend_flutter/controllers/pusat_lokasi_controller.dart';
@@ -7,255 +8,137 @@ class TambahLokasiModal {
     BuildContext context,
     PusatLokasiController pusatController,
   ) {
-    final nama_lokasiC = TextEditingController();
-    final titik_koordinatC = TextEditingController();
-    final keterangan_lokasiC = TextEditingController();
-    const String role = 'user';
+    final namaLokasiC = TextEditingController();
+    final titikKordinatC = TextEditingController();
+    final alamatLengkapC = TextEditingController();
+    final keteranganC = TextEditingController();
+
     Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.2),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHandle(),
-              const SizedBox(height: 20),
-              _buildHeader(),
-              const SizedBox(height: 24),
-              _buildFormFields(
-                nama_lokasiC,
-                titik_koordinatC,
-                keterangan_lokasiC,
-              ),
-              const SizedBox(height: 24),
-              _buildRegisterButton(
-                nama_lokasiC,
-                titik_koordinatC,
-                keterangan_lokasiC,
-                pusatController,
-              ),
-              const SizedBox(height: 12),
-              _buildCancelButton(),
-            ],
-          ),
-        ),
+      _TambahLokasiSheet(
+        namaLokasiC: namaLokasiC,
+        titikKordinatC: titikKordinatC,
+        alamatLengkapC: alamatLengkapC,
+        keteranganC: keteranganC,
+        pusatController: pusatController,
       ),
       isScrollControlled: true,
-      enableDrag: false,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
     );
   }
+}
 
-  static Widget _buildHandle() {
-    return Center(
-      child: Container(
-        width: 50,
-        height: 5,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(10),
+// ─── StatefulWidget agar bisa setState saat koordinat diisi dari map ──────────
+class _TambahLokasiSheet extends StatefulWidget {
+  final TextEditingController namaLokasiC;
+  final TextEditingController titikKordinatC;
+  final TextEditingController alamatLengkapC;
+  final TextEditingController keteranganC;
+  final PusatLokasiController pusatController;
+
+  const _TambahLokasiSheet({
+    required this.namaLokasiC,
+    required this.titikKordinatC,
+    required this.alamatLengkapC,
+    required this.keteranganC,
+    required this.pusatController,
+  });
+
+  @override
+  State<_TambahLokasiSheet> createState() => _TambahLokasiSheetState();
+}
+
+class _TambahLokasiSheetState extends State<_TambahLokasiSheet> {
+  Future<void> _openMapPicker() async {
+    // Navigasi ke MapPickerPage, hasil berupa String koordinat "lat, lng"
+    final String? result = await Get.to<String>(
+      () => const MapPickerPage(),
+      fullscreenDialog: true,
+    );
+
+    if (result != null && result.isNotEmpty) {
+      setState(() {
+        widget.titikKordinatC.text = result;
+      });
+    }
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    bool readOnly = false,
+    int maxLines = 1,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        readOnly: readOnly,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+          prefixIcon: Icon(icon, color: Colors.blue, size: 20),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
         ),
       ),
     );
   }
 
-  static Widget _buildHeader() {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.person_add, color: Colors.blue, size: 24),
-        ),
-        const SizedBox(width: 16),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Tambah Lokasi Baru',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Isi data dengan lengkap',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  static Widget _buildFormFields(
-    TextEditingController nama_lokasiC,
-    TextEditingController alamat_lokasiC,
-    TextEditingController keterangan_lokasiC,
-  ) {
-    return Column(
-      children: [
-        TextField(
-          controller: nama_lokasiC,
-          decoration: InputDecoration(
-            labelText: 'Nama Lokasi',
-            hintText: 'Masukkan nama lokasi',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-            prefixIcon: const Icon(Icons.location_on, color: Colors.blue),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: alamat_lokasiC,
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            labelText: 'Titik Koordinat',
-            hintText: 'Masukan',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-            prefixIcon: const Icon(
-              Icons.location_on_rounded,
-              color: Colors.blue,
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: keterangan_lokasiC,
-          // maxLines: 2,
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'Keterangan Lokasi',
-            hintText: 'Masukkan Keterangan Lokasi',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-            prefixIcon: const Icon(Icons.note, color: Colors.blue),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-      ],
-    );
-  }
-
-  static Widget _buildRegisterButton(
-    TextEditingController nama_lokasiC,
-    TextEditingController titik_koordinatC,
-    TextEditingController keterangan_lokasiC,
-    PusatLokasiController pusatController,
-  ) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => _validateAndRegister(
-          nama_lokasiC,
-          titik_koordinatC,
-          keterangan_lokasiC,
-          pusatController,
-        ),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 3,
-        ),
-        child: const Text(
-          'TAMBAHKAN LOKASI',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-  static Widget _buildCancelButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        onPressed: () => Get.back(),
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-        ),
-        child: Text('Batal', style: TextStyle(color: Colors.grey.shade600)),
-      ),
-    );
-  }
-
-  static void _validateAndRegister(
-    TextEditingController nama_lokasiC,
-    TextEditingController titik_koordinatC,
-    TextEditingController keterangan_lokasiC,
-    PusatLokasiController pusatController,
-  ) {
-    // Validasi
-    if (nama_lokasiC.text.isEmpty) {
+  void _validateAndSave() {
+    if (widget.namaLokasiC.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
-        'Nama wajib diisi',
+        'Nama lokasi wajib diisi',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
-    if (titik_koordinatC.text.isEmpty) {
+    if (widget.titikKordinatC.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
-        'Email wajib diisi',
+        'Titik kordinat wajib diisi. Tap ikon map untuk memilih lokasi.',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-    if (keterangan_lokasiC.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Email wajib diisi',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
 
-    // Tutup bottom sheet
     Get.back();
-    // Tampilkan dialog konfirmasi
+
     Get.dialog(
       AlertDialog(
         title: const Text(
           'Konfirmasi',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: const Text('Daftarkan akun sebagai USER?'),
+        content: const Text('Simpan data pusat lokasi ini?'),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           ElevatedButton(
             onPressed: () {
               Get.back();
-              pusatController.createPusatLokasi(
-                namaLokasi: nama_lokasiC.text,
-                titikKordinat: titik_koordinatC.text,
-                keterangan: keterangan_lokasiC.text,
+              widget.pusatController.createPusatLokasi(
+                namaLokasi: widget.namaLokasiC.text.trim(),
+                titikKordinat: widget.titikKordinatC.text.trim(),
+                keterangan: widget.keteranganC.text.trim().isNotEmpty
+                    ? widget.keteranganC.text.trim()
+                    : null,
               );
             },
             style: ElevatedButton.styleFrom(
@@ -265,9 +148,162 @@ class TambahLokasiModal {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Ya, Daftar'),
+            child: const Text('Simpan'),
           ),
         ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Handle bar
+            Center(
+              child: Container(
+                width: 48,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Title
+            const Center(
+              child: Text(
+                'Tambah Pusat Lokasi',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Nama Lokasi
+            _buildTextField(
+              controller: widget.namaLokasiC,
+              hint: 'Nama Lokasi *',
+              icon: Icons.location_on,
+            ),
+            const SizedBox(height: 12),
+
+            // Titik Kordinat + Tombol Map
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    controller: widget.titikKordinatC,
+                    hint: 'Titik Kordinat *',
+                    icon: Icons.location_on,
+                    readOnly: true, // diisi otomatis dari map picker
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: _openMapPicker,
+                  child: Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.map_outlined,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Alamat Lengkap
+            _buildTextField(
+              controller: widget.alamatLengkapC,
+              hint: 'Alamat Lengkap',
+              icon: Icons.apartment,
+              maxLines: 2,
+            ),
+            const SizedBox(height: 12),
+
+            // Keterangan (Opsional)
+            _buildTextField(
+              controller: widget.keteranganC,
+              hint: 'Keterangan (Opsional)',
+              icon: Icons.description_outlined,
+              maxLines: 2,
+            ),
+            const SizedBox(height: 28),
+
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Get.back(),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(
+                      'Batal',
+                      style: TextStyle(
+                        color: Colors.blue.shade400,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _validateAndSave,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text(
+                      'Simpan',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

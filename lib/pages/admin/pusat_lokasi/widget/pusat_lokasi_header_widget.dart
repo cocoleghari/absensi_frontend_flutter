@@ -1,144 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:absensi_frontend_flutter/controllers/pusat_lokasi_controller.dart';
 
-class PusatHeaderWIdget extends StatelessWidget {
-  final int totalLokasi;
-  const PusatHeaderWIdget({super.key, required this.totalLokasi});
+class PusatLokasiHeaderWidget extends StatelessWidget {
+  const PusatLokasiHeaderWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            _buildHeaderRow(),
-            const SizedBox(height: 16),
-            _buildStatistikRow(),
-          ],
-        ),
+    final PusatLokasiController controller = Get.find<PusatLokasiController>();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildHeaderRow() {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.people, color: Colors.blue, size: 30),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Manajemen Lokasi',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Total: $totalLokasi akun terdaftar',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.purple.shade50,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.admin_panel_settings,
-                size: 14,
-                color: Colors.purple.shade700,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'Admin',
-                style: TextStyle(
-                  color: Colors.purple.shade700,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatistikRow() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.purple.shade50,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.purple.shade200),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.admin_panel_settings,
-                  color: Colors.purple.shade700,
-                  size: 24,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Admin',
-                  style: TextStyle(fontSize: 12, color: Colors.purple.shade700),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.blue.shade200),
             ),
-            child: Column(
-              children: [
-                Icon(Icons.person, color: Colors.blue.shade700, size: 24),
-                const SizedBox(height: 4),
-                Text(
-                  'User',
-                  style: TextStyle(fontSize: 12, color: Colors.blue.shade700),
-                ),
-              ],
-            ),
+            child: const Icon(Icons.location_on, color: Colors.blue, size: 28),
           ),
-        ),
-      ],
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Pusat Lokasi',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Obx(
+                () => Text(
+                  'Total: ${controller.pusatLokasis.length} lokasi terdaftar',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,133 +1,225 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:absensi_frontend_flutter/controllers/pusat_lokasi_controller.dart';
 
-import 'package:absensi_frontend_flutter/pages/admin/pusat_lokasi/widget/pusat_lokasi_empty_widget.dart';
-
 class PusatLokasiTableWidget extends StatelessWidget {
-  final PusatLokasiController pusatlokasiController;
-  const PusatLokasiTableWidget({
-    super.key,
-    required this.pusatlokasiController,
-  });
+  const PusatLokasiTableWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
-    if (pusatlokasiController.pusatLokasis.isEmpty) {
-      return const PusatLokasiEmptyWidget();
-    }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: DataTable(
-            headingRowColor: MaterialStateProperty.all(Colors.blue.shade50),
-            headingTextStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.blue.shade700,
-            ),
-            columnSpacing: 20,
-            horizontalMargin: 16,
-            columns: const [
-              DataColumn(label: Text('No')),
-              DataColumn(label: Text('Nama Lokasi')),
-              DataColumn(label: Text('Alamat')),
-              DataColumn(label: Text('Keterangan')),
-              DataColumn(label: Text('Aksi')),
-            ],
-            rows: List.generate(pusatlokasiController.pusatLokasis.length, (
-              index,
-            ) {
-              final pusat_lokasi = pusatlokasiController.pusatLokasis[index];
-              return DataRow(
-                cells: [
-                  DataCell(
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            color: Colors.blue.shade700,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
+    final PusatLokasiController controller = Get.find<PusatLokasiController>();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          children: [
+            // Table Header
+            Container(
+              color: Colors.blue.shade50,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 32,
+                    child: Obx(
+                      () => Checkbox(
+                        value:
+                            controller.filteredLokasis.isNotEmpty &&
+                            controller.selectedIds.length ==
+                                controller.filteredLokasis.length,
+                        onChanged: (_) => controller.selectAll(),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
                         ),
                       ),
                     ),
                   ),
-                  DataCell(
-                    Text(
-                      pusat_lokasi.nama_lokasi,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
+                  const SizedBox(width: 4),
+                  const SizedBox(
+                    width: 36,
+                    child: Text(
+                      'No',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
-                  DataCell(Text(pusat_lokasi.titik_koordinat)),
-                  // DataCell(_buildRoleBadge(user.role)),
-                  // DataCell(
-                  //   IconButton(
-                  //     icon: Container(
-                  //       padding: const EdgeInsets.all(4),
-                  //       decoration: BoxDecoration(
-                  //         color: Colors.red.shade50,
-                  //         shape: BoxShape.circle,
-                  //       ),
-                  //       child: const Icon(
-                  //         Icons.delete,
-                  //         color: Colors.red,
-                  //         size: 18,
-                  //       ),
-                  //     ),
-                  //     onPressed: () {
-                  //       DeletePusatLConfirmation.show(
-                  //         context: context,
-                  //         userName: user.name,
-                  //         userId: user.id,
-                  //         userController: userController,
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
+                  const Expanded(
+                    flex: 2,
+                    child: Text(
+                      'Nama Lokasi',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  const Expanded(
+                    flex: 3,
+                    child: Text(
+                      'Titik Kordinat',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
                 ],
-              );
-            }),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRoleBadge(String role) {
-    final isAdmin = role == 'admin';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isAdmin ? Colors.purple.shade50 : Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isAdmin ? Icons.admin_panel_settings : Icons.person,
-            size: 12,
-            color: isAdmin ? Colors.purple : Colors.blue,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            role,
-            style: TextStyle(
-              color: isAdmin ? Colors.purple : Colors.blue,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+              ),
             ),
-          ),
-        ],
+            // Table Body
+            Expanded(
+              child: Obx(() {
+                final filtered = controller.filteredLokasis;
+
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_off,
+                          size: 48,
+                          color: Colors.grey.shade300,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Belum ada lokasi terdaftar',
+                          style: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  padding: EdgeInsets.zero,
+                  itemCount: filtered.length,
+                  separatorBuilder: (_, _x) =>
+                      Divider(height: 1, color: Colors.blue.shade50),
+                  itemBuilder: (context, index) {
+                    final item = filtered[index];
+                    final bool isSelected = controller.selectedIds.contains(
+                      item.id,
+                    );
+
+                    return InkWell(
+                      onTap: () {
+                        if (controller.isSelectionMode.value) {
+                          controller.toggleSelectItem(item.id);
+                        }
+                      },
+                      onLongPress: () {
+                        controller.isSelectionMode.value = true;
+                        controller.toggleSelectItem(item.id);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 32,
+                              child: Obx(
+                                () => Checkbox(
+                                  value: controller.selectedIds.contains(
+                                    item.id,
+                                  ),
+                                  onChanged: (_) =>
+                                      controller.toggleSelectItem(item.id),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            SizedBox(
+                              width: 36,
+                              child: Container(
+                                width: 26,
+                                height: 26,
+                                decoration: const BoxDecoration(
+                                  color: Colors.blue,
+                                  shape: BoxShape.circle,
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '${index + 1}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                item.nama_lokasi,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      item.titik_koordinat ?? '-',
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.black87,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }

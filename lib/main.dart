@@ -2,6 +2,7 @@ import 'package:absensi_frontend_flutter/bindings/lokasi_binding.dart';
 import 'package:absensi_frontend_flutter/bindings/pusat_lokasi_binding.dart';
 import 'package:absensi_frontend_flutter/pages/admin/lokasi_page/lokasi_page.dart';
 import 'package:absensi_frontend_flutter/pages/admin/pusat_lokasi/pusat_lokasi_page.dart';
+import 'package:absensi_frontend_flutter/pages/auth/splash_page.dart';
 import 'package:absensi_frontend_flutter/pages/user/user_page/user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
       initialRoute: _getInitialRoute(),
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Poppins'),
       getPages: [
+        // GetPage(name: '/splash', page: () => const SplashPage()),
         GetPage(name: '/login', page: () => const LoginPage()),
         GetPage(name: '/register', page: () => const RegisterPage()),
         // ini routing untuk admin
