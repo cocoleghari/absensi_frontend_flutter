@@ -1,4 +1,5 @@
 import 'package:absensi_frontend_flutter/controllers/auth_controller.dart';
+import 'package:absensi_frontend_flutter/controllers/lokasi_controller.dart';
 import 'package:absensi_frontend_flutter/controllers/user_lokasi_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,12 +10,12 @@ class ProfilPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    final UserLokasiController lokasiController =
+    final UserLokasiController userlokasiController =
         Get.find<UserLokasiController>();
 
     // Fetch lokasi saat halaman dibuka
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      lokasiController.fetchUserLokasi();
+      userlokasiController.fetchUserLokasi();
     });
 
     return Scaffold(
@@ -196,7 +197,7 @@ class ProfilPage extends StatelessWidget {
                                 fontSize: 13,
                               ),
                             ),
-                            subtitle: lokasiController.isLoading.value
+                            subtitle: userlokasiController.isLoading.value
                                 ? const SizedBox(
                                     height: 16,
                                     width: 16,
@@ -205,12 +206,14 @@ class ProfilPage extends StatelessWidget {
                                       color: Color(0xFF43A047),
                                     ),
                                   )
-                                : Text(
-                                    '${lokasiController.userLokasis.length} Lokasi',
-                                    style: const TextStyle(
-                                      color: Color(0xFF43A047),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                : Obx(
+                                    () => Text(
+                                      '${userlokasiController.userLokasis.length} Lokasi',
+                                      style: const TextStyle(
+                                        color: Color(0xFF43A047),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                             trailing: const Icon(

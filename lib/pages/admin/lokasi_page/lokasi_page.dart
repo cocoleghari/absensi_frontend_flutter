@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../controllers/lokasi_controller.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../controllers/pusat_lokasi_controller.dart';
 import '../master_drawer.dart';
 import 'widget/lokasi_multiple_form.dart';
 import 'widget/lokasi_table_widget.dart';

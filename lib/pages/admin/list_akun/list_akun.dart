@@ -4,7 +4,6 @@ import 'package:absensi_frontend_flutter/pages/admin/master_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_action_buttons.dart';
-import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_empty_widget.dart';
 import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_header_widget.dart';
 import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_info_card.dart';
 import 'package:absensi_frontend_flutter/pages/admin/list_akun/widget/akun_table_widget.dart';

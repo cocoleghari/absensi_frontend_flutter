@@ -46,7 +46,7 @@ class PusatLokasiController extends GetxController {
     errorMessage.value = '';
 
     try {
-      String url = '$baseUrl/admin/pusat-lokasi';
+      String url = '$baseUrl/admin/pusat_lokasi/all';
       bool hasParam = false;
 
       if (search != null && search.isNotEmpty) {
@@ -127,9 +127,9 @@ class PusatLokasiController extends GetxController {
   }
 
   Future<bool> createPusatLokasi({
-    required String namaLokasi,
-    required String titikKordinat,
-    String? keterangan,
+    required String nama_lokasi,
+    required String titik_koordinat,
+    String? keterangan_lokasi,
   }) async {
     if (auth.token.isEmpty) {
       Get.snackbar(
@@ -145,16 +145,16 @@ class PusatLokasiController extends GetxController {
     isSubmitting.value = true;
 
     try {
-      print('Creating pusat lokasi: $namaLokasi');
+      print('Creating pusat lokasi: $nama_lokasi');
 
       final response = await http
           .post(
-            Uri.parse('$baseUrl/admin/pusat_lokasi/all'),
+            Uri.parse('$baseUrl/admin/pusat_lokasi'),
             headers: {..._authHeaders, 'Content-Type': 'application/json'},
             body: jsonEncode({
-              'nama_lokasi': namaLokasi,
-              'titik_kordinat': titikKordinat,
-              'keterangan': keterangan,
+              'nama_lokasi': nama_lokasi,
+              'titik_koordinat': titik_koordinat,
+              'keterangan_lokasi': keterangan_lokasi,
             }),
           )
           .timeout(const Duration(seconds: 10));
@@ -214,9 +214,9 @@ class PusatLokasiController extends GetxController {
 
   Future<bool> updatePusatLokasi({
     required int id,
-    String? namaLokasi,
-    String? titikKordinat,
-    String? keterangan,
+    String? nama_lokasi,
+    String? titik_koordinat,
+    String? keterangan_lokasi,
   }) async {
     if (auth.token.isEmpty) {
       Get.snackbar('Error', 'Token tidak ditemukan');
@@ -229,9 +229,10 @@ class PusatLokasiController extends GetxController {
       print('Updating pusat lokasi ID: $id');
 
       Map<String, dynamic> body = {};
-      if (namaLokasi != null) body['nama_lokasi'] = namaLokasi;
-      if (titikKordinat != null) body['titik_kordinat'] = titikKordinat;
-      if (keterangan != null) body['keterangan'] = keterangan;
+      if (nama_lokasi != null) body['nama_lokasi'] = nama_lokasi;
+      if (titik_koordinat != null) body['titik_kordinat'] = titik_koordinat;
+      if (keterangan_lokasi != null)
+        body['keterangan_lokasi'] = keterangan_lokasi;
 
       final response = await http
           .put(
@@ -281,7 +282,7 @@ class PusatLokasiController extends GetxController {
 
       final response = await http
           .delete(
-            Uri.parse('$baseUrl/admin/pusat-lokasi/$id'),
+            Uri.parse('$baseUrl/admin/pusat_lokasi/$id'),
             headers: _authHeaders,
           )
           .timeout(const Duration(seconds: 10));

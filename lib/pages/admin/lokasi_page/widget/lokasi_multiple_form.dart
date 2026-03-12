@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/lokasi_controller.dart';
+import '../../../../controllers/pusat_lokasi_controller.dart';
 
 class LokasiMultipleForm extends GetView<LokasiController> {
   const LokasiMultipleForm({super.key});
@@ -282,7 +283,7 @@ class LokasiMultipleForm extends GetView<LokasiController> {
                             const SizedBox(width: 2),
                             Expanded(
                               child: Text(
-                                item['titik_kordinat'],
+                                item['titik_koordinat'],
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: Colors.grey.shade600,
@@ -292,8 +293,8 @@ class LokasiMultipleForm extends GetView<LokasiController> {
                             ),
                           ],
                         ),
-                        if (item['keterangan'] != null &&
-                            item['keterangan'].toString().isNotEmpty)
+                        if (item['keterangan_lokasi'] != null &&
+                            item['keterangan_lokasi'].toString().isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(top: 2),
                             child: Row(
@@ -306,7 +307,7 @@ class LokasiMultipleForm extends GetView<LokasiController> {
                                 const SizedBox(width: 2),
                                 Expanded(
                                   child: Text(
-                                    item['keterangan'],
+                                    item['keterangan_lokasi'],
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Colors.grey.shade500,

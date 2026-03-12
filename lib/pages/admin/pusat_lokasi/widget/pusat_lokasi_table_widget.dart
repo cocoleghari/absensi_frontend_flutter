@@ -81,6 +81,18 @@ class PusatLokasiTableWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    width: 52,
+                    child: Text(
+                      'Aksi',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -210,6 +222,29 @@ class PusatLokasiTableWidget extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            // Kolom Aksi - tombol hapus
+                            SizedBox(
+                              width: 52,
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      _confirmDelete(context, controller, item),
+                                  child: Container(
+                                    width: 34,
+                                    height: 34,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -221,6 +256,89 @@ class PusatLokasiTableWidget extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _confirmDelete(
+    BuildContext context,
+    PusatLokasiController controller,
+    dynamic item,
+  ) {
+    Get.defaultDialog(
+      title: 'Hapus Lokasi',
+      titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      content: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.delete_outline,
+              color: Colors.red,
+              size: 32,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Yakin ingin menghapus\n"${item.nama_lokasi}"?',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Data yang dihapus tidak dapat dikembalikan.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ],
+      ),
+      textCancel: 'Batal',
+      textConfirm: 'Hapus',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      cancelTextColor: Colors.blue,
+      onConfirm: () async {
+        Get.back(); // tutup dialog konfirmasi
+
+        // Tampilkan loading
+        // Get.dialog(
+        //   const Center(
+        //     child: Card(
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.all(Radius.circular(16)),
+        //       ),
+        //       child: Padding(
+        //         padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        //         child: Column(
+        //           mainAxisSize: MainAxisSize.min,
+        //           children: [
+        //             CircularProgressIndicator(),
+        //             SizedBox(height: 16),
+        //             Text('Menghapus data...'),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        //   barrierDismissible: false,
+        // );
+
+        // Panggil method dari controller, tunggu hasil bool
+        final bool success = await controller.deletePusatLokasi(item.id);
+
+        // Tutup loading
+        if (Get.isDialogOpen ?? false) Get.back();
+
+        // Snackbar sudah ditangani di dalam controller,
+        // tapi kita bisa tambahkan aksi tambahan jika perlu
+        if (!success) {
+          // Jika gagal, tidak perlu aksi tambahan karena
+          // controller sudah menampilkan snackbar error
+        }
+      },
     );
   }
 }

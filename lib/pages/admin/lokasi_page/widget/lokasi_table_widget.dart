@@ -1,3 +1,4 @@
+import 'package:absensi_frontend_flutter/pages/admin/lokasi_page/modals/lokasi_delete_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/lokasi_controller.dart';
@@ -101,17 +102,17 @@ class LokasiTableWidget extends GetView<LokasiController> {
                   ),
                 ),
               ),
-              // DataCell(
-              //   IconButton(
-              //     icon: const Icon(Icons.delete, color: Colors.red),
-              //     onPressed: () => LokasiDeleteDialog.show(
-              //       context: Get.context!,
-              //       id: item.id,
-              //       lokasi: item.lokasi,
-              //       controller: controller,
-              //     ),
-              //   ),
-              // ),
+              DataCell(
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => LokasiDeleteDialog.show(
+                    context: Get.context!,
+                    id: item.id,
+                    lokasi: item.lokasi,
+                    controller: controller,
+                  ),
+                ),
+              ),
             ],
           );
         }),
@@ -141,15 +142,15 @@ class LokasiTableWidget extends GetView<LokasiController> {
                 Text('Koordinat: ${item.koordinat}'),
               ],
             ),
-            // trailing: IconButton(
-            //   icon: const Icon(Icons.delete, color: Colors.red),
-            //   onPressed: () => LokasiDeleteDialog.show(
-            //     context: Get.context!,
-            //     id: item.id,
-            //     lokasi: item.lokasi,
-            //     controller: controller,
-            //   ),
-            // ),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () => LokasiDeleteDialog.show(
+                context: Get.context!,
+                id: item.id,
+                lokasi: item.lokasi,
+                controller: controller,
+              ),
+            ),
           ),
         );
       },

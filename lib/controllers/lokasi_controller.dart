@@ -36,7 +36,7 @@ class LokasiController extends GetxController {
     if (auth.token.isEmpty) return;
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/admin/pusat-lokasi'),
+        Uri.parse('$baseUrl/admin/pusat_lokasi/all'),
         headers: _authHeaders,
       );
       if (response.statusCode == 200) {
@@ -171,7 +171,7 @@ class LokasiController extends GetxController {
             body: jsonEncode({
               'user_id': int.parse(selectedUserForMultiple.value),
               'lokasi': item['nama_lokasi'],
-              'koordinat': item['titik_kordinat'],
+              'koordinat': item['titik_koordinat'],
             }),
           );
           if (response.statusCode == 200 || response.statusCode == 201) {

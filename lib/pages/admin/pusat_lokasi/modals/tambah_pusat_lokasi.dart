@@ -134,9 +134,9 @@ class _TambahLokasiSheetState extends State<_TambahLokasiSheet> {
             onPressed: () {
               Get.back();
               widget.pusatController.createPusatLokasi(
-                namaLokasi: widget.namaLokasiC.text.trim(),
-                titikKordinat: widget.titikKordinatC.text.trim(),
-                keterangan: widget.keteranganC.text.trim().isNotEmpty
+                nama_lokasi: widget.namaLokasiC.text.trim(),
+                titik_koordinat: widget.titikKordinatC.text.trim(),
+                keterangan_lokasi: widget.keteranganC.text.trim().isNotEmpty
                     ? widget.keteranganC.text.trim()
                     : null,
               );
