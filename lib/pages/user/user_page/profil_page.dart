@@ -1,5 +1,4 @@
 import 'package:absensi_frontend_flutter/controllers/auth_controller.dart';
-import 'package:absensi_frontend_flutter/controllers/lokasi_controller.dart';
 import 'package:absensi_frontend_flutter/controllers/user_lokasi_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -197,17 +196,17 @@ class ProfilPage extends StatelessWidget {
                                 fontSize: 13,
                               ),
                             ),
-                            subtitle: userlokasiController.isLoading.value
-                                ? const SizedBox(
-                                    height: 16,
-                                    width: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Color(0xFF43A047),
-                                    ),
-                                  )
-                                : Obx(
-                                    () => Text(
+                            subtitle: Obx(
+                              () => userlokasiController.isLoading.value
+                                  ? const SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Color(0xFF43A047),
+                                      ),
+                                    )
+                                  : Text(
                                       '${userlokasiController.userLokasis.length} Lokasi',
                                       style: const TextStyle(
                                         color: Color(0xFF43A047),
@@ -215,13 +214,16 @@ class ProfilPage extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ),
+                            ),
                             trailing: const Icon(
                               Icons.chevron_right,
                               color: Color(0xFF43A047),
                             ),
                             onTap: () {
                               // Navigate to detail lokasi
+                              userlokasiController.showLokasiBottomSheet(
+                                context,
+                              );
                             },
                           ),
                         ),

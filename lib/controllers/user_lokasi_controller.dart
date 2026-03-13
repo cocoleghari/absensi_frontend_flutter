@@ -117,8 +117,8 @@ class UserLokasiController extends GetxController {
       if (response.statusCode == 200) {
         final dynamic data = jsonDecode(response.body);
 
-        if (data is List) {
-          userLokasis.value = List<Map<String, dynamic>>.from(data);
+        if (data is Map && data['data'] is List) {
+          userLokasis.value = List<Map<String, dynamic>>.from(data['data']);
           print('Lokasi ditemukan: ${userLokasis.length} data');
 
           if (userLokasis.isEmpty) {
@@ -796,5 +796,130 @@ class UserLokasiController extends GetxController {
     print('Loading: $isLoading');
     print('Submitting: $isSubmitting');
     print('=' * 50);
+  }
+
+  void showLokasiBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Header
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3F2FD),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.location_on,
+                    color: Color(0xFF1E88E5),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Daftar Lokasi Absensi',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Get.back(),
+                  icon: const Icon(Icons.close),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.grey[100],
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 24),
+
+            // List lokasi
+            Obx(
+              () => userLokasis.isEmpty
+                  ? const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        'Tidak ada lokasi tersedia',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: userLokasis.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      itemBuilder: (_, index) {
+                        final lokasi = userLokasis[index];
+                        return Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey[200]!),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on_outlined,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      lokasi['lokasi'] ?? '-',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      lokasi['koordinat'] ?? '-',
+                                      style: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
+
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
   }
 }
